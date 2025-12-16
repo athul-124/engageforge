@@ -39,8 +39,9 @@ export async function GET(request: NextRequest): Promise<Response> {
         });
     } catch (error) {
         console.error("[Rules API] Error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         return NextResponse.json(
-            { error: "Internal server error" },
+            { error: "Internal server error", details: errorMessage },
             { status: 500 }
         );
     }
