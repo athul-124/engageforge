@@ -113,10 +113,11 @@ export function RuleBuilder({ eventTypes, badges, onSubmit, isLoading }: RuleBui
                 <select
                     value={eventType}
                     onChange={(e) => setEventType(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    style={{ colorScheme: 'dark' }}
                 >
                     {eventTypes.map((event) => (
-                        <option key={event.value} value={event.value}>
+                        <option key={event.value} value={event.value} className="bg-gray-800 text-white">
                             {event.label}
                         </option>
                     ))}
@@ -160,11 +161,12 @@ export function RuleBuilder({ eventTypes, badges, onSubmit, isLoading }: RuleBui
                 <select
                     value={badgeId || ""}
                     onChange={(e) => setBadgeId(e.target.value || null)}
-                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    style={{ colorScheme: 'dark' }}
                 >
-                    <option value="">No badge</option>
+                    <option value="" className="bg-gray-800 text-white">No badge</option>
                     {badges.map((badge) => (
-                        <option key={badge.id} value={badge.id}>
+                        <option key={badge.id} value={badge.id} className="bg-gray-800 text-white">
                             {badge.icon} {badge.name}
                         </option>
                     ))}
