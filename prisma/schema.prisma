@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== EngageForge Gamification Models =====
+
+model Company {
+  id        String   @id // Whop company_id (biz_xxx)
+  name      String
+  rules     Rule[]
+  users     User[]
+  badges    Badge[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id           String      @id // Whop user_id
+  companyId    String
+  company      Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  whopUsername String?
+  displayName  String?
+  xp           Int         @default(0)
+  level        Int         @default(1)
+  earnedBadges UserBadge[]
+  xpEvents     XpEvent[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([id, companyId])
+  @@index([companyId])
+  @@index([xp(sort: Desc)])
+}
+
+model Rule {
+  id          String    @id @default(cuid())
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String    // "Post in chat", "Make a purchase"
+  description String?
+  eventType   String    // "chat.message.created", "membership.activated", "payment.succeeded"
+  xpAmount    Int       // XP to award when triggered
+  badgeId     String?   // Optional badge to award
+  badge       Badge?    @relation(fields: [badgeId], references: [id])
+  isActive    Boolean   @default(true)
+  xpEvents    XpEvent[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([companyId, isActive])
+  @@index([eventType])
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String      // "Early Adopter", "Chat Champion"
+  description String?
+  icon        String      // Emoji or URL
+  rules       Rule[]
+  earnedBy    UserBadge[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([companyId])
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId  String
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
+}
+
+model XpEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ruleId    String
+  rule      Rule     @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  xpAmount  Int
+  eventData Json?    // Raw webhook payload for debugging
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([ruleId])
+  @@index([createdAt(sort: Desc)])
+}
