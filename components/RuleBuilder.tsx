@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@whop/react/components";
 
 interface EventType {
     value: string;
@@ -74,122 +73,155 @@ export function RuleBuilder({ eventTypes, badges, onSubmit, isLoading }: RuleBui
     };
 
     const selectedEvent = eventTypes.find((e) => e.value === eventType);
+    const selectedBadge = badges.find((b) => b.id === badgeId);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Rule Name */}
-            <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Rule Name *
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                    Rule Name <span className="text-red-400">*</span>
                 </label>
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g., Chat Champion Bonus"
-                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    className="input-modern w-full"
                 />
             </div>
 
             {/* Description */}
-            <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Description (optional)
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                    Description <span className="text-gray-500">(optional)</span>
                 </label>
                 <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Describe what this rule rewards..."
                     rows={2}
-                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition resize-none"
+                    className="input-modern w-full resize-none"
                 />
             </div>
 
             {/* Event Type */}
-            <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Trigger Event *
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                    Trigger Event <span className="text-red-400">*</span>
                 </label>
                 <select
                     value={eventType}
                     onChange={(e) => setEventType(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                    style={{ colorScheme: 'dark' }}
+                    className="select-modern w-full"
                 >
                     {eventTypes.map((event) => (
-                        <option key={event.value} value={event.value} className="bg-gray-800 text-white">
+                        <option key={event.value} value={event.value}>
                             {event.label}
                         </option>
                     ))}
                 </select>
                 {selectedEvent && (
-                    <p className="mt-2 text-sm text-gray-500">{selectedEvent.description}</p>
+                    <p className="text-xs text-gray-500 flex items-center gap-2">
+                        <span className="text-purple-400">ℹ️</span>
+                        {selectedEvent.description}
+                    </p>
                 )}
             </div>
 
             {/* XP Amount */}
-            <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                    XP to Award *
+            <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-300">
+                    XP to Award <span className="text-red-400">*</span>
                 </label>
-                <div className="flex items-center gap-4">
-                    <input
-                        type="range"
-                        min="1"
-                        max="500"
-                        value={xpAmount}
-                        onChange={(e) => setXpAmount(parseInt(e.target.value))}
-                        className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
-                    />
-                    <input
-                        type="number"
-                        min="1"
-                        max="1000"
-                        value={xpAmount}
-                        onChange={(e) => setXpAmount(parseInt(e.target.value) || 1)}
-                        className="w-24 px-3 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-center focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                    <span className="text-purple-400 font-semibold">XP</span>
+                <div className="glass-card p-4 space-y-3">
+                    <div className="flex items-center gap-4">
+                        <input
+                            type="range"
+                            min="1"
+                            max="500"
+                            value={xpAmount}
+                            onChange={(e) => setXpAmount(parseInt(e.target.value))}
+                            className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                        />
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                min="1"
+                                max="1000"
+                                value={xpAmount}
+                                onChange={(e) => setXpAmount(parseInt(e.target.value) || 1)}
+                                className="w-20 input-modern text-center text-lg font-bold"
+                            />
+                            <span className="text-purple-400 font-semibold">XP</span>
+                        </div>
+                    </div>
+                    {/* XP Preview */}
+                    <div className="flex justify-between text-xs text-gray-500">
+                        <span>Low</span>
+                        <span className={xpAmount >= 100 ? "text-yellow-400" : xpAmount >= 50 ? "text-purple-400" : ""}>
+                            {xpAmount < 25 ? "Common reward" : xpAmount < 100 ? "Good reward" : "Premium reward! 🌟"}
+                        </span>
+                        <span>High</span>
+                    </div>
                 </div>
             </div>
 
             {/* Badge (Optional) */}
-            <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Award Badge (optional)
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                    Award Badge <span className="text-gray-500">(optional)</span>
                 </label>
                 <select
                     value={badgeId || ""}
                     onChange={(e) => setBadgeId(e.target.value || null)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                    style={{ colorScheme: 'dark' }}
+                    className="select-modern w-full"
                 >
-                    <option value="" className="bg-gray-800 text-white">No badge</option>
+                    <option value="">No badge</option>
                     {badges.map((badge) => (
-                        <option key={badge.id} value={badge.id} className="bg-gray-800 text-white">
+                        <option key={badge.id} value={badge.id}>
                             {badge.icon} {badge.name}
                         </option>
                     ))}
                 </select>
+                {selectedBadge && (
+                    <div className="flex items-center gap-2 text-sm text-gray-400 mt-2">
+                        <span className="text-2xl">{selectedBadge.icon}</span>
+                        <span>Members will receive the <strong className="text-white">{selectedBadge.name}</strong> badge</span>
+                    </div>
+                )}
             </div>
 
             {/* Error */}
             {error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                    <p className="text-red-400 text-sm">{error}</p>
+                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+                    <p className="text-red-400 text-sm flex items-center gap-2">
+                        <span>⚠️</span> {error}
+                    </p>
                 </div>
             )}
 
             {/* Submit */}
-            <Button
+            <button
                 type="submit"
-                variant="classic"
-                size="3"
-                className="w-full"
                 disabled={isLoading}
+                className={`
+                    btn-primary w-full flex items-center justify-center gap-2
+                    ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
             >
-                {isLoading ? "Creating..." : "Create Rule"}
-            </Button>
+                {isLoading ? (
+                    <>
+                        <span className="animate-spin">⚙️</span>
+                        Creating...
+                    </>
+                ) : (
+                    <>
+                        <span>✨</span>
+                        Create Rule
+                    </>
+                )}
+            </button>
         </form>
     );
 }
